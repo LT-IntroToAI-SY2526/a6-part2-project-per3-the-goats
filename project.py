@@ -67,7 +67,7 @@ def visualize_data(data):
     pass
 
 
-def prepare_and_split_data(data):
+def prepare_and_split_data(Age, Brand, Condition):
     """
     Prepare X and y, then split into train/test
     
@@ -88,11 +88,13 @@ def prepare_and_split_data(data):
     print("PREPARING AND SPLITTING DATA")
     print("=" * 70)
     
+    X = data[Brand, Condition]
+    y = data[Age]
     print(f"\n=== Data Split ===")
     print(f"\n=== Data Split (Matching Unplugged Activity) ===")
     print(f"Training set: {len(X_train)} samples")
     print(f"Testing set: {len(X_test)} samples")
-    pass
+    return X_train, X_test, y_train, y_test
 
 
 def train_model(X_train, y_train):
