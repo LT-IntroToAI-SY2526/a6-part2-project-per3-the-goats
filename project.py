@@ -10,7 +10,7 @@ Group Members:
 
 Dataset: [Smartphone market prices]
 Predicting: [Resale price of phones]
-Features: [brands, condition, age]
+Features: [brand, condition, age]
 """
 
 import pandas as pd
@@ -38,20 +38,21 @@ def load_and_explore_data(filename):
     print("LOADING AND EXPLORING DATA")
     print("=" * 70)
     
-    data = pd.read_csv(filename)
+    data = pd.read_csv(filename, sep="\t")
 
     print("=== Smartphone Market Prices ===")
-    print(f"\nFirst 5 rows:")
+    print(f"\First 5 rows:")
     print(data.head())
 
     print(f"\nDataset shape: {data.shape[0]} rows, {data.shape[1]} columns")
-    
+
     print(f"\nBasic statistics:")
     print(data.describe())
-    
+
     print(f"\nColumn names: {list(data.columns)}")
-    
+
     return data
+
 
 
 def visualize_data(data):
@@ -79,7 +80,7 @@ def visualize_data(data):
     axes[0, 0].scatter(data['Brand'], data['Price'], color='blue', alpha=0.6)
     axes[0, 0].set_xlabel('Brand (0=Apple, 1=Samsung, 2=Google, 3=OnePlus, 4=Xiaomi)')
     axes[0, 0].set_ylabel('Price ($)')
-    axes[0, 0].set_title('Brands vs Price')
+    axes[0, 0].set_title('Brand vs Price')
     axes[0, 0].grid(True, alpha=0.3)
     
     axes[0, 1].scatter(data['Condition'], data['Price'], color='green', alpha=0.6)
@@ -124,27 +125,9 @@ def prepare_and_split_data(data):
     print("PREPARING AND SPLITTING DATA")
     print("=" * 70)
     
-    feature_columns = ['Age', 'Brand', 'Condition']
-    X = data[feature_columns]
-    y = data['Price']
+    # Your code here
     
-    print(f"\n=== Feature Preparation ===")
-    print(f"Features (X) shape: {X.shape}")
-    print(f"Target (y) shape: {y.shape}")
-    print(f"\nFeature columns: {list(X.columns)}")
-    
-    return X, y
-    
-    X_train = X.iloc[:15]  
-    X_test = X.iloc[15:]   
-    y_train = y.iloc[:15]
-    y_test = y.iloc[15:]
-    
-    print(f"\n=== Data Split (Matching Unplugged Activity) ===")
-    print(f"Training set: {len(X_train)} samples (first 15 smartphones)")
-    print(f"Testing set: {len(X_test)} samples (last 3 smartphones - your holdout set!)")
-    
-    return X_train, X_test, y_train, y_test
+    pass
 
 
 def train_model(X_train, y_train, feature_names):
