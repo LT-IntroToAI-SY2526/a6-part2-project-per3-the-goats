@@ -3,14 +3,14 @@ Multivariable Linear Regression Project
 Assignment 6 Part 3
 
 Group Members:
-- 
-- 
+- Enggy Puma
+- Victoria Serrano
 - 
 - 
 
-Dataset: [Name of your dataset]
-Predicting: [What you're predicting]
-Features: [List your features]
+Dataset: [Smartphone market prices]
+Predicting: [Resale price of phones]
+Features: [brands, condition, age]
 """
 
 import pandas as pd
@@ -21,7 +21,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
 # TODO: Update this with your actual filename
-DATA_FILE = 'your_data.csv'
+DATA_FILE = 'smartphone_prices.csv'
 
 def load_and_explore_data(filename):
     """
@@ -38,9 +38,20 @@ def load_and_explore_data(filename):
     print("LOADING AND EXPLORING DATA")
     print("=" * 70)
     
-    # Your code here
+    data = pd.read_csv(filename)
+
+    print("=== Smartphone Market Prices ===")
+    print(f"\nFirst 5 rows:")
+    print(data.head())
+
+    print(f"\nDataset shape: {data.shape[0]} rows, {data.shape[1]} columns")
     
-    pass
+    print(f"\nBasic statistics:")
+    print(data.describe())
+    
+    print(f"\nColumn names: {list(data.columns)}")
+    
+    return data
 
 
 def visualize_data(data):
@@ -61,10 +72,35 @@ def visualize_data(data):
     print("VISUALIZING RELATIONSHIPS")
     print("=" * 70)
     
-    # Your code here
-    # Hint: Use subplots like in Part 2!
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     
-    pass
+    fig.suptitle('Smartphone Features vs Price', fontsize=16, fontweight='bold')
+    
+    axes[0, 0].scatter(data['Brand'], data['Price'], color='blue', alpha=0.6)
+    axes[0, 0].set_xlabel('Brand (0=Apple, 1=Samsung, 2=Google, 3=OnePlus, 4=Xiaomi)')
+    axes[0, 0].set_ylabel('Price ($)')
+    axes[0, 0].set_title('Brands vs Price')
+    axes[0, 0].grid(True, alpha=0.3)
+    
+    axes[0, 1].scatter(data['Condition'], data['Price'], color='green', alpha=0.6)
+    axes[0, 1].set_xlabel('Condition (0=Poor, 1=Fair, 2=Good, 3=New)')
+    axes[0, 1].set_ylabel('Price ($)')
+    axes[0, 1].set_title('Condition vs Price')
+    axes[0, 1].grid(True, alpha=0.3)
+   
+    axes[1, 0].scatter(data['Age'], data['Price'], color='red', alpha=0.6)
+    axes[1, 0].set_xlabel('Age (years)')
+    axes[1, 0].set_ylabel('Price ($)')
+    axes[1, 0].set_title('Age vs Price')
+    axes[1, 0].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    
+    plt.savefig('feature_plots.png', dpi=300, bbox_inches='tight')
+    print("\n✓ Feature plots saved as 'feature_plots.png'")
+    
+    plt.show()
+    
 
 
 def prepare_and_split_data(data):
@@ -88,12 +124,30 @@ def prepare_and_split_data(data):
     print("PREPARING AND SPLITTING DATA")
     print("=" * 70)
     
-    # Your code here
+    feature_columns = ['Age', 'Brand', 'Condition']
+    X = data[feature_columns]
+    y = data['Price']
     
-    pass
+    print(f"\n=== Feature Preparation ===")
+    print(f"Features (X) shape: {X.shape}")
+    print(f"Target (y) shape: {y.shape}")
+    print(f"\nFeature columns: {list(X.columns)}")
+    
+    return X, y
+    
+    X_train = X.iloc[:15]  
+    X_test = X.iloc[15:]   
+    y_train = y.iloc[:15]
+    y_test = y.iloc[15:]
+    
+    print(f"\n=== Data Split (Matching Unplugged Activity) ===")
+    print(f"Training set: {len(X_train)} samples (first 15 smartphones)")
+    print(f"Testing set: {len(X_test)} samples (last 3 smartphones - your holdout set!)")
+    
+    return X_train, X_test, y_train, y_test
 
 
-def train_model(X_train, y_train):
+def train_model(X_train, y_train, feature_names):
     """
     Train the linear regression model
     
@@ -114,9 +168,26 @@ def train_model(X_train, y_train):
     print("TRAINING MODEL")
     print("=" * 70)
     
-    # Your code here
+    model = LinearRegression()
+    model.fit(X_train, y_train)
     
-    pass
+    print(f"\n=== Model Training Complete ===")
+    print(f"Intercept: ${model.intercept_:.2f}")
+    print(f"\nCoefficients:")
+    for name, coef in zip(feature_names, model.coef_):
+        print(f"  {name}: {coef:.2f}")
+    
+    print(f"\nEquation:")
+    equation = f"Price = "
+    for i, (name, coef) in enumerate(zip(feature_names, model.coef_)):
+        if i == 0:
+            equation += f"{coef:.2f} × {name}"
+        else:
+            equation += f" + ({coef:.2f}) × {name}"
+    equation += f" + {model.intercept_:.2f}"
+    print(equation)
+    
+    return model
 
 
 def evaluate_model(model, X_test, y_test):
