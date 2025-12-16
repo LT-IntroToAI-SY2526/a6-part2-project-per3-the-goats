@@ -88,8 +88,10 @@ def prepare_and_split_data(data):
     print("PREPARING AND SPLITTING DATA")
     print("=" * 70)
     
-    # Your code here
-    
+    print(f"\n=== Data Split ===")
+    print(f"\n=== Data Split (Matching Unplugged Activity) ===")
+    print(f"Training set: {len(X_train)} samples")
+    print(f"Testing set: {len(X_test)} samples")
     pass
 
 
