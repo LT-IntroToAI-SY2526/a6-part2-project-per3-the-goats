@@ -38,10 +38,10 @@ def load_and_explore_data(filename):
     print("LOADING AND EXPLORING DATA")
     print("=" * 70)
     
-    data = pd.read_csv(filename, sep="\t")
+    data = pd.read_csv(filename)
 
     print("=== Smartphone Market Prices ===")
-    print(f"\First 5 rows:")
+    print(f"\nFirst 5 rows:")
     print(data.head())
 
     print(f"\nDataset shape: {data.shape[0]} rows, {data.shape[1]} columns")
@@ -297,8 +297,8 @@ if __name__ == "__main__":
     # Step 2: Visualize
     visualize_data(data)
     
-    # Step 3: Prepare feautures
-    X, y = prepare_feautures
+    # Step 3: Prepare feautures and split data
+    X, y = prepare_feautures(data)
 
     X_train, X_test, y_train, y_test = split_data(X, y)
     
