@@ -78,7 +78,7 @@ def visualize_data(data):
     
    
     axes[0, 0].scatter(data['Brand'], data['Price'], color='blue', alpha=0.6)
-    axes[0, 0].set_xlabel('Brand (0=Apple, 1=Samsung, 2=Google, 3=OnePlus, 4=Xiaomi)')
+    axes[0, 0].set_xlabel('Brand (0=Apple, 1=Samsung, 2=Google)')
     axes[0, 0].set_ylabel('Price ($)')
     axes[0, 0].set_title('Brand vs Price')
     axes[0, 0].grid(True, alpha=0.3)
@@ -199,7 +199,7 @@ def train_model(X_train, y_train, feature_names):
     return model
 
 
-def evaluate_model(model, X_test, y_test):
+def evaluate_model(model, X_test, y_test, feauture_names):
     """
     Evaluate model performance
     
@@ -236,7 +236,7 @@ def evaluate_model(model, X_test, y_test):
     print(f"  → On average, predictions are off by ${rmse:.2f}")
     
     print(f"\n=== Feature Importance ===")
-    feature_importance = list(zip(feature_names, np.abs(model.coef_)))
+    feature_importance = list(zip(feauture_names, np.abs(model.coef_)))
     feature_importance.sort(key=lambda x: x[1], reverse=True)
     
     for i, (name, importance) in enumerate(feature_importance, 1):
@@ -277,14 +277,17 @@ def make_prediction(model, brand, condition, age):
     print("=" * 70)
     
     smartphone_feautures = pd.DataFrame([[brand, condition, age]],
-                                        columns=['Brand', 'Condition', 'Brand'])
+                                        columns=['Brand', 'Condition', 'Age'])
     predicted_price = model.predict(smartphone_feautures)[0] 
 
-    brand_name = [Apple, 'Samsung', 2=Google, 3=OnePlus, 4=Xiaomi][brand]
+    brand_name = ['Apple', 'Samsung', 'Google'][brand]
     # Example: If predicting house price with [sqft, bedrooms, bathrooms]
     # sample = pd.DataFrame([[2000, 3, 2]], columns=feature_names)
     
-    pass
+    print(f"\n=== New Prediction ===")
+    print(f"Predicted smartphone price: ${predicted_price:,.2f}")
+
+    return predicted_price
 
 
 if __name__ == "__main__":
@@ -295,9 +298,10 @@ if __name__ == "__main__":
     visualize_data(data)
     
     # Step 3: Prepare feautures
-    X_train, X_test, y_train, y_test = prepare_and_
+    X, y = prepare_feautures
+
+    X_train, X_test, y_train, y_test = split_data(X, y)
     
-    split_data(data)
     
     # Step 4: Train
     model = train_model(X_train, y_train)
