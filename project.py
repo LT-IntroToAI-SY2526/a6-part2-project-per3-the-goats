@@ -74,9 +74,9 @@ def visualize_data(data):
     print("=" * 70)
     
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-    
     fig.suptitle('Smartphone Features vs Price', fontsize=16, fontweight='bold')
     
+   
     axes[0, 0].scatter(data['Brand'], data['Price'], color='blue', alpha=0.6)
     axes[0, 0].set_xlabel('Brand (0=Apple, 1=Samsung, 2=Google, 3=OnePlus, 4=Xiaomi)')
     axes[0, 0].set_ylabel('Price ($)')
@@ -89,12 +89,17 @@ def visualize_data(data):
     axes[0, 1].set_title('Condition vs Price')
     axes[0, 1].grid(True, alpha=0.3)
    
+
     axes[1, 0].scatter(data['Age'], data['Price'], color='red', alpha=0.6)
     axes[1, 0].set_xlabel('Age (years)')
     axes[1, 0].set_ylabel('Price ($)')
     axes[1, 0].set_title('Age vs Price')
     axes[1, 0].grid(True, alpha=0.3)
     
+    axes[1, 1].text(0.5, 0.5, 'Space for additional feautures',
+                   ha='center', va='center', fontsize=12)
+    axes[1, 1].axis('off')
+
     plt.tight_layout()
     
     plt.savefig('feature_plots.png', dpi=300, bbox_inches='tight')
@@ -104,7 +109,7 @@ def visualize_data(data):
     
 
 
-def prepare_and_split_data(data):
+def prepare_feautures(data):
     """
     Prepare X and y, then split into train/test
     
@@ -125,9 +130,30 @@ def prepare_and_split_data(data):
     print("PREPARING AND SPLITTING DATA")
     print("=" * 70)
     
-    # Your code here
+    feauture_columns = ['Brand', 'Condition', 'Age']
+    X = data[feauture_columns]
+    y = data['Price']
+
+    print(f"\n=== Feauture Preparation ===")
+    print(f"Features (X) shape: {X.shape}")
+    print(f"Target (y) shape: {y.shape}")
+    print(f"\nFeature columns: {list(X.columns)}")
     
-    pass
+    return X, y
+
+
+def split_data(X, y):
+
+    X_train = X.iloc[:15]
+    X_test = X.iloc[15:]   
+    y_train = y.iloc[:15]
+    y_test = y.iloc[15:]
+
+    print(f"\n=== Data Split (Matching Unplugged Activity) ===")
+    print(f"Training set: {len(X_train)} samples")
+    print(f"Testing set: {len(X_test)} samples")
+    
+    return X_train, X_test, y_train, y_test
 
 
 def train_model(X_train, y_train, feature_names):
@@ -196,12 +222,44 @@ def evaluate_model(model, X_test, y_test):
     print("EVALUATING MODEL")
     print("=" * 70)
     
-    # Your code here
+    predictions = model.predict(X_test)
+
+    r2 = r2_score(y_test, predictions)
+    mse = mean_squared_error(y_test, predictions)
+    rmse = np.sqrt(mse)
     
-    pass
+    print(f"\n=== Model Performance ===")
+    print(f"R² Score: {r2:.4f}")
+    print(f"  → Model explains {r2*100:.2f}% of price variation")
+    
+    print(f"\nRoot Mean Squared Error: ${rmse:.2f}")
+    print(f"  → On average, predictions are off by ${rmse:.2f}")
+    
+    print(f"\n=== Feature Importance ===")
+    feature_importance = list(zip(feature_names, np.abs(model.coef_)))
+    feature_importance.sort(key=lambda x: x[1], reverse=True)
+    
+    for i, (name, importance) in enumerate(feature_importance, 1):
+        print(f"{i}. {name}: {importance:.2f}")
+    
+    return predictions
+    
+def compare_predictions(y_test, predictions, num_examples=10):
+
+    print(f"\n=== Prediction Examples ===")
+    print(f"{'Actual Price':<15} {'Predicted Price':<18} {'Error':<12} {'% Error'}")
+    print("-" * 60)
+
+    for i in range(min(num_examples, len(y_test))):
+        actual = y_test.iloc[i]
+        predicted = predictions[i]
+        error = actual - predicted
+        pct_error = (abs(error) / actual) * 100
+
+        print(f"${actual:>12.2f}  ${predicted:>13.2f}  ${error:>10.2f}  {pct_error:>6.2f}%")
 
 
-def make_prediction(model):
+def make_prediction(model, brand, condition, age):
     """
     Make a prediction for a new example
     
@@ -218,7 +276,11 @@ def make_prediction(model):
     print("EXAMPLE PREDICTION")
     print("=" * 70)
     
-    # Your code here
+    smartphone_feautures = pd.DataFrame([[brand, condition, age]],
+                                        columns=['Brand', 'Condition', 'Brand'])
+    predicted_price = model.predict(smartphone_feautures)[0] 
+
+    brand_name = [Apple, 'Samsung', 2=Google, 3=OnePlus, 4=Xiaomi][brand]
     # Example: If predicting house price with [sqft, bedrooms, bathrooms]
     # sample = pd.DataFrame([[2000, 3, 2]], columns=feature_names)
     
@@ -232,8 +294,10 @@ if __name__ == "__main__":
     # Step 2: Visualize
     visualize_data(data)
     
-    # Step 3: Prepare and split
-    X_train, X_test, y_train, y_test = prepare_and_split_data(data)
+    # Step 3: Prepare feautures
+    X_train, X_test, y_train, y_test = prepare_and_
+    
+    split_data(data)
     
     # Step 4: Train
     model = train_model(X_train, y_train)
