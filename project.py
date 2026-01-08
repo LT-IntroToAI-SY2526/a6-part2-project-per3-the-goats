@@ -304,13 +304,15 @@ if __name__ == "__main__":
     
     
     # Step 4: Train
-    model = train_model(X_train, y_train)
+    model = train_model(X_train, y_train, X.columns)
     
     # Step 5: Evaluate
-    predictions = evaluate_model(model, X_test, y_test)
+    predictions = evaluate_model(model, X_test, y_test, X.columns)
     
+    compare_predictions(y_test, predictions)
+
     # Step 6: Make a prediction, add features as an argument
-    make_prediction(model)
+    make_prediction(model, 3, 2, 1)
     
     print("\n" + "=" * 70)
     print("PROJECT COMPLETE!")
